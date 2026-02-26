@@ -26,7 +26,10 @@ const propertyData = {
   petFriendly: true,
   nonSmoking: true,
 
-  images: Array.from({ length: 28 }, (_, i) => `/property/19150/${i + 1}.png`),
+images: Array.from(
+  { length: 28 },
+  (_, i) => `${import.meta.env.BASE_URL}property/19150/${i + 1}.png`
+),
 
   owner: {
     name: "Janak Dhabuwala",
