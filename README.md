@@ -1,0 +1,1 @@
+Property rental web app built with React and TypeScript that showcases a furnished Eastport villa, including gallery, amenities, rates, contact host, and email-based review submission.
