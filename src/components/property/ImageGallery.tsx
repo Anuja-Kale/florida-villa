@@ -31,58 +31,69 @@ export const ImageGallery = ({ images, title }: ImageGalleryProps) => {
 
   return (
     <>
-      <div className="relative grid grid-cols-4 grid-rows-2 gap-2 h-[420px] rounded-xl overflow-hidden">
-        {/* Main large image */}
-        <div
-          className="col-span-2 row-span-2 relative cursor-pointer group"
-          onClick={() => openAt(0)}
-        >
-          <img
-            src={displayImages[0]}
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 left-4 rounded-full bg-white/90 hover:bg-white shadow-soft"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsLiked((v) => !v);
-            }}
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isLiked ? "fill-accent text-accent" : "text-muted-foreground"
-              }`}
-            />
-          </Button>
-        </div>
-
-        {/* Secondary images grid */}
-        {displayImages.slice(1, 5).map((image, index) => (
+      {/* ✅ Responsive Gallery
+          - Mobile: 1 big image + 2x2 grid underneath (nice and readable)
+          - Desktop: your original 4x2 layout
+      */}
+      <div className="relative overflow-hidden rounded-xl">
+        <div className="grid gap-2 grid-cols-2 auto-rows-[120px] sm:grid-cols-4 sm:grid-rows-2 sm:auto-rows-[200px] sm:h-[420px]">
+          {/* Main image */}
           <div
-            key={index}
-            className="relative cursor-pointer group overflow-hidden"
-            onClick={() => openAt(index + 1)}
+            className="relative cursor-pointer group col-span-2 row-span-2 sm:col-span-2 sm:row-span-2"
+            onClick={() => openAt(0)}
           >
             <img
-              src={image}
-              alt={`${title} - Image ${index + 2}`}
+              src={displayImages[0]}
+              alt={title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            {index === 3 && remainingCount > 0 && (
-              <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
-                <span className="text-white font-semibold text-lg">
-                  View All {images.length} Images
-                </span>
-              </div>
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 left-4 rounded-full bg-white/90 hover:bg-white shadow-soft"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLiked((v) => !v);
+              }}
+              aria-label="Like"
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isLiked ? "fill-accent text-accent" : "text-muted-foreground"
+                }`}
+              />
+            </Button>
           </div>
-        ))}
+
+          {/* Other 4 images (2x2 on mobile, 2x2 on right for desktop) */}
+          {displayImages.slice(1, 5).map((image, index) => (
+            <div
+              key={index}
+              className="relative cursor-pointer group overflow-hidden rounded-lg sm:rounded-none"
+              onClick={() => openAt(index + 1)}
+            >
+              <img
+                src={image}
+                alt={`${title} - Image ${index + 2}`}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              {/* Last tile overlay */}
+              {index === 3 && remainingCount > 0 && (
+                <div className="absolute inset-0 bg-black/55 flex items-center justify-center p-3 text-center">
+                  <span className="text-white font-semibold text-sm sm:text-lg leading-snug">
+                    View All {images.length} Images
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Fullscreen modal */}
@@ -91,7 +102,6 @@ export const ImageGallery = ({ images, title }: ImageGalleryProps) => {
           className={[
             "p-0 border-0 bg-transparent shadow-none",
             "w-screen h-screen max-w-none",
-            // Hide the default shadcn DialogContent close button (it is rendered after children)
             "[&>button:last-child]:hidden",
           ].join(" ")}
         >
@@ -105,6 +115,7 @@ export const ImageGallery = ({ images, title }: ImageGalleryProps) => {
                 e.stopPropagation();
                 setShowModal(false);
               }}
+              aria-label="Close"
             >
               <X className="w-6 h-6" />
             </Button>
@@ -114,17 +125,18 @@ export const ImageGallery = ({ images, title }: ImageGalleryProps) => {
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute left-6 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white z-20"
+              className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white z-20"
               onClick={(e) => {
                 e.stopPropagation();
                 prevImage();
               }}
+              aria-label="Previous image"
             >
               <ChevronLeft className="w-8 h-8" />
             </Button>
 
             {/* Image */}
-            <div className="w-full h-full flex items-center justify-center px-10">
+            <div className="w-full h-full flex items-center justify-center px-6 sm:px-10">
               <img
                 src={images[currentIndex]}
                 alt={`${title} - Image ${currentIndex + 1}`}
@@ -137,11 +149,12 @@ export const ImageGallery = ({ images, title }: ImageGalleryProps) => {
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute right-6 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white z-20"
+              className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white z-20"
               onClick={(e) => {
                 e.stopPropagation();
                 nextImage();
               }}
+              aria-label="Next image"
             >
               <ChevronRight className="w-8 h-8" />
             </Button>
